@@ -1,7 +1,6 @@
 package com.onit.cards.controller
 
 import com.onit.cards.dto.ErrorResponseDTO
-import com.onit.cards.dto.GameDTO
 import com.onit.cards.dto.TranslationDTO
 import com.onit.cards.exception.ObjectNotFoundException
 import com.onit.cards.model.Translation
@@ -21,7 +20,7 @@ class TranslationController {
 
     @ApiOperation(value = "Looks up the translation with the given ID.")
     @ApiResponses(
-            ApiResponse(code = 200, message = "Translation found", response = GameDTO::class),
+            ApiResponse(code = 200, message = "Translation found", response = TranslationDTO::class),
             ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
     )
     @GetMapping("/translation/{id}")
@@ -38,7 +37,7 @@ class TranslationController {
 
     @ApiOperation(value = "Saves the translation. If no ID is provided the translation is being created as a new entry, otherwise the translation with the given ID  or is updated.")
     @ApiResponses(
-            ApiResponse(code = 200, message = "Translation saved", response = GameDTO::class),
+            ApiResponse(code = 200, message = "Translation saved", response = TranslationDTO::class),
             ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
     )
     @PutMapping("/translation")
@@ -48,8 +47,24 @@ class TranslationController {
             translation: TranslationDTO
     ): TranslationDTO {
         // Check if translation for given ID exists. Forcing ObjectNotFoundException if not.
-        translation.id?.let { id -> translationService.findTranslation(id) }
+        translation.id?.let { id -> translationService.findTranslation(id)?:throw ObjectNotFoundException() }
         return TranslationDTO.fromTranslation(translationService.saveTranslation(translation.toTranslation()))
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @ApiOperation(value = "Starts a new session for this translation.")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Session started"),
+            ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
+    )
+    @PutMapping("/translation")
+    fun putTranslation(
+            @ApiParam(value = "The translation ID for which a session is to be started", required = true)
+            @PathVariable
+            translationId: String
+    ) {
+        translationService.startSession(translationId)
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -47,7 +47,7 @@ class GameController {
             game: GameDTO
     ): GameDTO {
         // Check if game for given ID exists. Forcing ObjectNotFoundException if not.
-        game.id?.let { id -> gameService.findGame(id) }
+        game.id?.let { id -> gameService.findGame(id)?:throw ObjectNotFoundException() }
         return GameDTO.fromGame(gameService.saveGame(game.toGame()))
     }
 

@@ -47,7 +47,7 @@ class CardController {
             card: CardDTO
     ): CardDTO {
         // Check if card for given ID exists. Forcing ObjectNotFoundException if not.
-        card.id?.let { id -> cardService.findCard(id) }
+        card.id?.let { id -> cardService.findCard(id)?:throw ObjectNotFoundException() }
         return CardDTO.fromCard(cardService.saveCard(card.toCard()))
     }
 
