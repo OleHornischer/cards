@@ -44,7 +44,8 @@ class CardController {
     fun putCard(
             @ApiParam(value = "The card to be saved. Provide null as ID if you want to create a new card", required = true)
             @RequestBody
-            card: CardDTO): CardDTO {
+            card: CardDTO
+    ): CardDTO {
         // Check if card for given ID exists. Forcing ObjectNotFoundException if not.
         card.id?.let { id -> cardService.findCard(id) }
         return CardDTO.fromCard(cardService.saveCard(card.toCard()))
@@ -64,7 +65,8 @@ class CardController {
             gameId: String,
             @ApiParam(value = "The ID of the translation for which the cards should be listed", required = true)
             @RequestHeader("translation-id")
-            translationId: String): List<CardDTO> {
+            translationId: String
+    ): List<CardDTO> {
         val card: List<Card> = cardService.findAllCardsForGameAndTranslation(gameId, translationId)
         return card.map { c -> CardDTO.fromCard(c) }
     }
