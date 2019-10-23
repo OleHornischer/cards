@@ -58,8 +58,8 @@ class TranslationController {
             ApiResponse(code = 200, message = "Session started"),
             ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
     )
-    @PutMapping("/translation")
-    fun putTranslation(
+    @PostMapping("/translation")
+    fun postTranslation(
             @ApiParam(value = "The translation ID for which a session is to be started", required = true)
             @PathVariable
             translationId: String
