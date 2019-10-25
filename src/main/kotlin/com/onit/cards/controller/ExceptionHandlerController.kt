@@ -27,10 +27,20 @@ class ExceptionHandlerController {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @ExceptionHandler(NoHandlerFoundException::class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
     fun handleNoHandlerFound(exception: NoHandlerFoundException): ErrorResponseDTO {
         log.error("400 - A matching header could not be determined: " + exception.message, exception)
         return ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "No handler found for request.")
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @ExceptionHandler(Exception::class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    fun catchAll(exception: Exception): ErrorResponseDTO {
+        log.error("500 - Uncaught exception: " + exception.message, exception)
+        return ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Uncaught exception: (" + exception.javaClass.simpleName + ") " + exception.message)
     }
 }
