@@ -5,6 +5,7 @@ import com.onit.cards.exception.ObjectNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
@@ -32,6 +33,16 @@ class ExceptionHandlerController {
     fun handleNoHandlerFound(exception: NoHandlerFoundException): ErrorResponseDTO {
         log.error("400 - A matching header could not be determined: " + exception.message, exception)
         return ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "No handler found for request.")
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @ExceptionHandler(BadCredentialsException::class)
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    @ResponseBody
+    fun badCredentials(exception: BadCredentialsException): ErrorResponseDTO {
+        log.error("403 - Bad credentials", exception)
+        return ErrorResponseDTO(HttpStatus.FORBIDDEN.value(), "Bad credentials")
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

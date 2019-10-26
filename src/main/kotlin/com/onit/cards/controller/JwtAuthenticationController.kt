@@ -1,8 +1,9 @@
-package com.onit.cards.service
+package com.onit.cards.controller
 
 import com.onit.cards.authentication.JwtRequest
 import com.onit.cards.authentication.JwtResponse
 import com.onit.cards.authentication.JwtTokenUtil
+import com.onit.cards.service.JwtUserDetailsService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
@@ -14,9 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
-
 @RestController
-@CrossOrigin
 class JwtAuthenticationController {
 
     @Autowired
@@ -31,7 +30,7 @@ class JwtAuthenticationController {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @PostMapping("/authenticate")
-    fun createAuthenticationToken(@RequestBody authenticationRequest: JwtRequest): ResponseEntity<*> {
+    fun createAuthenticationToken(@RequestBody authenticationRequest: JwtRequest): ResponseEntity<JwtResponse> {
 
         authenticate(authenticationRequest.username, authenticationRequest.password)
 

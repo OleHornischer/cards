@@ -63,9 +63,9 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
     override fun configure(httpSecurity: HttpSecurity) {
-        httpSecurity
+        httpSecurity.cors().and().csrf().disable().authorizeRequests()
                 // dont authenticate this particular request
-                .authorizeRequests().antMatchers("/authenticate").permitAll()
+                .regexMatchers( HttpMethod.POST, "/authenticate*").permitAll()
                 // Allow all GET requests
                 .antMatchers(HttpMethod.GET).permitAll()
                 // all other requests need to be authenticated
@@ -76,6 +76,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter() {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         // Add a filter to validate the tokens with every request
-        httpSecurity.addFilterBefore(jwtRequestFilter!!, UsernamePasswordAuthenticationFilter::class.java)
+        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
 }
