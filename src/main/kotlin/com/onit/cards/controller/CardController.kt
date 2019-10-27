@@ -47,7 +47,7 @@ class CardController {
             card: CardDTO
     ): CardDTO {
         // Check if card for given ID exists. Forcing ObjectNotFoundException if not.
-        card.id?.let { id -> cardService.findCard(id)?:throw ObjectNotFoundException() }
+        card.id?.let { id -> cardService.findCard(id) ?: throw ObjectNotFoundException() }
         return CardDTO.fromCard(cardService.saveCard(card.toCard()))
     }
 
@@ -68,6 +68,22 @@ class CardController {
             translationId: String
     ): List<CardDTO> {
         val card: List<Card> = cardService.findAllCardsForGameAndTranslation(gameId, translationId)
+        return card.map { c -> CardDTO.fromCard(c) }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @ApiOperation(value = "Looks up all cards that match the given search string in their title.")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "List of cards with a title like the given search string", response = CardDTO::class, responseContainer = "List")
+    )
+    @GetMapping("/cards/by-title")
+    fun getCardsByTitle(
+            @ApiParam(value = "The search string", required = true)
+            @RequestParam
+            searchString: String
+    ): List<CardDTO> {
+        val card: List<Card> = cardService.findByTitle(searchString)
         return card.map { c -> CardDTO.fromCard(c) }
     }
 

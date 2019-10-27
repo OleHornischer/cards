@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 interface CardService {
     fun findCard(cardId: String): Card?
     fun findAllCardsForGameAndTranslation(gameId: String, translationId: String): List<Card>
+    fun findByTitle(searchString: String): List<Card>
     fun saveCard(card: Card): Card
     fun deleteCard(card: Card)
 }
@@ -23,11 +24,15 @@ class CardServiceImpl : CardService {
     @Autowired
     lateinit var cardRepository: CardRepository
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     override fun findCard(cardId: String): Card? {
         val card = cardRepository.findByIdOrNull(cardId)
         log.debug("Looked up card for id " + cardId)
         return card
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     override fun findAllCardsForGameAndTranslation(gameId: String, translationId: String): List<Card> {
         val cards = cardRepository.findAllByGameIdAndTranslationId(gameId, translationId)
@@ -35,11 +40,24 @@ class CardServiceImpl : CardService {
         return cards
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    override fun findByTitle(searchString: String): List<Card> {
+        val cards = cardRepository.findByTitleLike(searchString)
+        log.debug("Looked up "+cards.size+" cards for searchString " + searchString)
+        return cards
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     override fun saveCard(card: Card): Card {
         val card = cardRepository.save(card)
         log.info("Saved card for id " + card.id)
         return card
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     override fun deleteCard(card: Card) {
         cardRepository.delete(card)
