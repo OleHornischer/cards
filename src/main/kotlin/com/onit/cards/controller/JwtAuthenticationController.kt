@@ -43,14 +43,12 @@ class JwtAuthenticationController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @Throws(Exception::class)
+    @Throws(BadCredentialsException::class)
     private fun authenticate(username: String, password: String) {
         try {
             authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, password))
         } catch (e: DisabledException) {
-            throw Exception("USER_DISABLED", e)
-        } catch (e: BadCredentialsException) {
-            throw Exception("INVALID_CREDENTIALS", e)
+            throw BadCredentialsException("USER_DISABLED", e)
         }
 
     }

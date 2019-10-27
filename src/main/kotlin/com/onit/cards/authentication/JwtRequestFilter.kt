@@ -37,26 +37,26 @@ class JwtRequestFilter : OncePerRequestFilter() {
             val username = jwtTokenUtil.getUsernameFromToken(jwtToken)
 
             // Once we get the token validate it.
-            username?.map { uname ->
-                {
-                    if (null == SecurityContextHolder.getContext().authentication) {
+            if (null != username) {
+                if (null == SecurityContextHolder.getContext().authentication) {
 
-                        val userDetails = this.jwtUserDetailsService.loadUserByUsername(username)
+                    val userDetails = this.jwtUserDetailsService.loadUserByUsername(username)
 
-                        // if token is valid configure Spring Security to manually set
-                        // authentication
-                        if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+                    // if token is valid configure Spring Security to manually set
+                    // authentication
+                    if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
-                            val usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
-                            usernamePasswordAuthenticationToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                            // After setting the Authentication in the context, we specify
-                            // that the current user is authenticated. So it passes the
-                            // Spring Security Configurations successfully.
-                            SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
-                        }
+                        val usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
+                        usernamePasswordAuthenticationToken.details = WebAuthenticationDetailsSource().buildDetails(request)
+                        // After setting the Authentication in the context, we specify
+                        // that the current user is authenticated. So it passes the
+                        // Spring Security Configurations successfully.
+                        SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
                     }
                 }
-            } ?: logger.info("Missing or incorrect JWT token")
+            } else {
+                logger.info("Missing or incorrect JWT token")
+            }
 
         }
         chain.doFilter(request, response)

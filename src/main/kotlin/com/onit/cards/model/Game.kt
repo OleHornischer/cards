@@ -6,4 +6,4 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "games")
 @TypeAlias("Game")
-data class Game(@Id val id: String, val title: String, val description: String, val originalLanguage: String, val image: String?)
+data class Game(@Id val id: String, val title: String, val description: String, val vendor: String, val image: String?)
