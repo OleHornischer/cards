@@ -111,6 +111,6 @@ class TranslationController {
         response.contentType = "application/pdf"
         response.setHeader("Content-Disposition", String.format("attachment; filename=\"qr_codes.pdf\""));
 
-        FileCopyUtils.copy(ByteArrayInputStream(bytes), response.getOutputStream())
+        FileCopyUtils.copy(ByteArrayInputStream(bytes), response.outputStream)
     }
 }

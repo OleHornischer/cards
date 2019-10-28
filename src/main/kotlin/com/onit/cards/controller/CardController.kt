@@ -55,11 +55,11 @@ class CardController {
 
     @ApiOperation(value = "Looks up all cards for the given game and translation.")
     @ApiResponses(
-            ApiResponse(code = 200, message = "List of cards for the given game and translation", response = CardDTO::class, responseContainer = "List"),
-            ApiResponse(code = 404, message = "Game or translation for given ID could not be found", response = ErrorResponseDTO::class)
+            ApiResponse(code = 200, message = "List of cards for the given translation", response = CardDTO::class, responseContainer = "List"),
+            ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
     )
     @GetMapping("/cards/{translationId}")
-    fun getCardsForGameAndTranslation(
+    fun getCardsForTranslation(
             @ApiParam(value = "The ID of the translation for which the cards should be listed", required = true)
             @RequestHeader("translation-id")
             translationId: String
