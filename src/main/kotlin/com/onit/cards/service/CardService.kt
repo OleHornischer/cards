@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 
 interface CardService {
     fun findCard(cardId: String): Card?
-    fun findAllCardsForGameAndTranslation(gameId: String, translationId: String): List<Card>
+    fun findAllCardsForTranslation(translationId: String): List<Card>
     fun findByTitle(searchString: String): List<Card>
     fun saveCard(card: Card): Card
     fun deleteCard(card: Card)
@@ -34,9 +34,9 @@ class CardServiceImpl : CardService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    override fun findAllCardsForGameAndTranslation(gameId: String, translationId: String): List<Card> {
-        val cards = cardRepository.findAllByGameIdAndTranslationId(gameId, translationId)
-        log.debug("Looked up "+cards.size+" cards for gameId " + gameId + " and translationId " + translationId)
+    override fun findAllCardsForTranslation(translationId: String): List<Card> {
+        val cards = cardRepository.findAllByTranslationId(translationId)
+        log.debug("Looked up "+cards.size+" cards for translationId " + translationId)
         return cards
     }
 

@@ -58,16 +58,13 @@ class CardController {
             ApiResponse(code = 200, message = "List of cards for the given game and translation", response = CardDTO::class, responseContainer = "List"),
             ApiResponse(code = 404, message = "Game or translation for given ID could not be found", response = ErrorResponseDTO::class)
     )
-    @GetMapping("/cards/{gameId}")
+    @GetMapping("/cards/{translationId}")
     fun getCardsForGameAndTranslation(
-            @ApiParam(value = "The ID of the game for which the cards should be listed", required = true)
-            @PathVariable
-            gameId: String,
             @ApiParam(value = "The ID of the translation for which the cards should be listed", required = true)
             @RequestHeader("translation-id")
             translationId: String
     ): List<CardDTO> {
-        val card: List<Card> = cardService.findAllCardsForGameAndTranslation(gameId, translationId)
+        val card: List<Card> = cardService.findAllCardsForTranslation(translationId)
         return card.map { c -> CardDTO.fromCard(c) }
     }
 

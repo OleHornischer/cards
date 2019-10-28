@@ -4,10 +4,15 @@ import com.onit.cards.dto.ErrorResponseDTO
 import com.onit.cards.dto.TranslationDTO
 import com.onit.cards.exception.ObjectNotFoundException
 import com.onit.cards.model.Translation
+import com.onit.cards.service.DocumentService
 import com.onit.cards.service.TranslationService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.util.FileCopyUtils
 import org.springframework.web.bind.annotation.*
+import java.io.ByteArrayInputStream
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Api(description = "The Translations API")
 @RestController
@@ -15,6 +20,9 @@ class TranslationController {
 
     @Autowired
     lateinit var translationService: TranslationService
+
+    @Autowired
+    lateinit var documentService: DocumentService
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +55,7 @@ class TranslationController {
             translation: TranslationDTO
     ): TranslationDTO {
         // Check if translation for given ID exists. Forcing ObjectNotFoundException if not.
-        translation.id?.let { id -> translationService.findTranslation(id)?:throw ObjectNotFoundException() }
+        translation.id?.let { id -> translationService.findTranslation(id) ?: throw ObjectNotFoundException() }
         return TranslationDTO.fromTranslation(translationService.saveTranslation(translation.toTranslation()))
     }
 
@@ -69,6 +77,11 @@ class TranslationController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @ApiOperation(value = "Finds the translations for a given game.")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "The translations of the game"),
+            ApiResponse(code = 404, message = "The game was not found.", response = ErrorResponseDTO::class)
+    )
     @GetMapping("/translations/{gameId}")
     fun getTranslationsForGame(
             @ApiParam(value = "The ID of the game for which to list the translations", required = true)
@@ -77,5 +90,27 @@ class TranslationController {
     ): List<TranslationDTO> {
         val translations: List<Translation> = translationService.findAllTranslationsForGame(gameId)
         return translations.map { t -> TranslationDTO.fromTranslation(t) }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @ApiOperation(value = "Downloads the pdf containing the QR codes of the cards in this translation")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "The PDF with the QR codes"),
+            ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
+    )
+    @GetMapping("/translation/qr-printout/{translationId}")
+    fun getTranslationPrintOut(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            @ApiParam(value = "The ID of the translation for which to print the codes", required = true)
+            @PathVariable
+            translationId: String
+    ) {
+        val bytes = documentService.getQrCodesForTranslation(translationId)
+        response.contentType = "application/pdf"
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"qr_codes.pdf\""));
+
+        FileCopyUtils.copy(ByteArrayInputStream(bytes), response.getOutputStream())
     }
 }
