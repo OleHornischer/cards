@@ -1,6 +1,7 @@
 package com.onit.cards.service
 
 import com.onit.cards.data.CardRepository
+import com.onit.cards.exception.ObjectNotFoundException
 import com.onit.cards.model.Card
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,7 +14,7 @@ interface CardService {
     fun findAllCardsForTranslation(translationId: String): List<Card>
     fun findByTitle(searchString: String): List<Card>
     fun saveCard(card: Card): Card
-    fun deleteCard(card: Card)
+    fun deleteCard(cardId: String)
 }
 
 @Service("cardService")
@@ -36,7 +37,7 @@ class CardServiceImpl : CardService {
 
     override fun findAllCardsForTranslation(translationId: String): List<Card> {
         val cards = cardRepository.findAllByTranslationId(translationId)
-        log.debug("Looked up "+cards.size+" cards for translationId " + translationId)
+        log.debug("Looked up " + cards.size + " cards for translationId " + translationId)
         return cards
     }
 
@@ -45,7 +46,7 @@ class CardServiceImpl : CardService {
 
     override fun findByTitle(searchString: String): List<Card> {
         val cards = cardRepository.findByTitleLike(searchString)
-        log.debug("Looked up "+cards.size+" cards for searchString " + searchString)
+        log.debug("Looked up " + cards.size + " cards for searchString " + searchString)
         return cards
     }
 
@@ -59,8 +60,9 @@ class CardServiceImpl : CardService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    override fun deleteCard(card: Card) {
-        cardRepository.delete(card)
+    override fun deleteCard(cardId: String) {
+        val card = cardRepository.findByIdOrNull(cardId)
+        card?.let { c -> cardRepository.delete(c) } ?: throw ObjectNotFoundException()
         log.debug("Deleted card with id " + card.id)
     }
 }

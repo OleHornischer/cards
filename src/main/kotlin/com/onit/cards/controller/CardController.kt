@@ -53,6 +53,22 @@ class CardController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @ApiOperation(value = "Deletes this card.")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Card deleted"),
+            ApiResponse(code = 404, message = "Card for given ID could not be found", response = ErrorResponseDTO::class)
+    )
+    @DeleteMapping("/card")
+    fun deleteTranslation(
+            @ApiParam(value = "The ID of the card that is to be deleted", required = true)
+            @PathVariable
+            cardId: String
+    ) {
+        cardService.deleteCard(cardId)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     @ApiOperation(value = "Looks up all cards for the given game and translation.")
     @ApiResponses(
             ApiResponse(code = 200, message = "List of cards for the given translation", response = CardDTO::class, responseContainer = "List"),

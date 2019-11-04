@@ -13,7 +13,7 @@ interface TranslationService {
     fun findTranslation(translationId: String): Translation?
     fun findAllTranslationsForGame(gameId: String): List<Translation>
     fun saveTranslation(translation: Translation): Translation
-    fun deleteTranslation(translation: Translation)
+    fun deleteTranslation(translationId: String)
     fun startSession(translationId: String)
 }
 
@@ -51,8 +51,9 @@ class TranslationServiceImpl : TranslationService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    override fun deleteTranslation(translation: Translation) {
-        translationRepository.delete(translation)
+    override fun deleteTranslation(translationId: String) {
+        val translation = translationRepository.findByIdOrNull(translationId)
+        translation?.let { t -> translationRepository.delete(t) } ?: throw ObjectNotFoundException()
         log.debug("Deleted translation with id " + translation)
     }
 

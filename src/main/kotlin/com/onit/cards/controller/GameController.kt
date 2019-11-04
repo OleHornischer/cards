@@ -53,6 +53,22 @@ class GameController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @ApiOperation(value = "Deletes this game.")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Game deleted"),
+            ApiResponse(code = 404, message = "Game for given ID could not be found", response = ErrorResponseDTO::class)
+    )
+    @DeleteMapping("/game")
+    fun deleteTranslation(
+            @ApiParam(value = "The ID of the game that is to be deleted", required = true)
+            @PathVariable
+            gameId: String
+    ) {
+        gameService.deleteGame(gameId)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     @ApiOperation(value = "Searches all games that contain the given string in their name.")
     @ApiResponse(code = 200, message = "Games found", response = GameDTO::class, responseContainer = "List")
     @GetMapping("/games")

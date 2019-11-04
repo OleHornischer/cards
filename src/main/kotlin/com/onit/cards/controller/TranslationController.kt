@@ -43,6 +43,28 @@ class TranslationController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @ApiOperation(value = "Downloads the pdf containing the QR codes of the cards in this translation")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "The PDF with the QR codes"),
+            ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
+    )
+    @GetMapping("/translation/qr-printout/{translationId}")
+    fun getTranslationPrintOut(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            @ApiParam(value = "The ID of the translation for which to print the codes", required = true)
+            @PathVariable
+            translationId: String
+    ) {
+        val bytes = documentService.getQrCodesForTranslation(translationId)
+        response.contentType = "application/pdf"
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"qr_codes.pdf\""));
+
+        FileCopyUtils.copy(ByteArrayInputStream(bytes), response.outputStream)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     @ApiOperation(value = "Saves the translation. If no ID is provided the translation is being created as a new entry, otherwise the translation with the given ID  or is updated.")
     @ApiResponses(
             ApiResponse(code = 200, message = "Translation saved", response = TranslationDTO::class),
@@ -77,6 +99,22 @@ class TranslationController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @ApiOperation(value = "Deletes this translation.")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "Translation deleted"),
+            ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
+    )
+    @DeleteMapping("/translation")
+    fun deleteTranslation(
+            @ApiParam(value = "The translation ID of the translation that is to be deleted", required = true)
+            @PathVariable
+            translationId: String
+    ) {
+        translationService.deleteTranslation(translationId)
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     @ApiOperation(value = "Finds the translations for a given game.")
     @ApiResponses(
             ApiResponse(code = 200, message = "The translations of the game"),
@@ -90,27 +128,5 @@ class TranslationController {
     ): List<TranslationDTO> {
         val translations: List<Translation> = translationService.findAllTranslationsForGame(gameId)
         return translations.map { t -> TranslationDTO.fromTranslation(t) }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @ApiOperation(value = "Downloads the pdf containing the QR codes of the cards in this translation")
-    @ApiResponses(
-            ApiResponse(code = 200, message = "The PDF with the QR codes"),
-            ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
-    )
-    @GetMapping("/translation/qr-printout/{translationId}")
-    fun getTranslationPrintOut(
-            request: HttpServletRequest,
-            response: HttpServletResponse,
-            @ApiParam(value = "The ID of the translation for which to print the codes", required = true)
-            @PathVariable
-            translationId: String
-    ) {
-        val bytes = documentService.getQrCodesForTranslation(translationId)
-        response.contentType = "application/pdf"
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"qr_codes.pdf\""));
-
-        FileCopyUtils.copy(ByteArrayInputStream(bytes), response.outputStream)
     }
 }

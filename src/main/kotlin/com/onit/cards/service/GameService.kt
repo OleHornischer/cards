@@ -1,6 +1,7 @@
 package com.onit.cards.service
 
 import com.onit.cards.data.GameRepository
+import com.onit.cards.exception.ObjectNotFoundException
 import com.onit.cards.model.Game
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,7 +13,7 @@ interface GameService {
     fun findGame(gameId: String): Game?
     fun findGamesByTitle(searchString: String?): List<Game>
     fun saveGame(game: Game): Game
-    fun deleteGame(game: Game)
+    fun deleteGame(gameId: String)
 }
 
 @Service("gameService")
@@ -52,8 +53,9 @@ class GameServiceImpl : GameService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    override fun deleteGame(game: Game) {
-        gameRepository.delete(game)
+    override fun deleteGame(gameId: String) {
+        val game = gameRepository.findByIdOrNull(gameId)
+        game?.let { g -> gameRepository.delete(g) } ?: throw ObjectNotFoundException()
         log.debug("Deleted game with id " + game.id)
     }
 }
