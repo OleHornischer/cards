@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param
 
 interface CardRepository : CrudRepository<Card, String> {
 
-    fun findAllByTranslationId(translationId: String): List<Card>
+    fun findAllByGameId(gameId: String): List<Card>
 
     fun findByTitleLike(@Param("title") title: String): List<Card>
 

@@ -10,12 +10,14 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 interface CardService {
-    fun findCard(cardId: String): Card?
-    fun findAllCardsForTranslation(translationId: String): List<Card>
+    fun findCard(cardId: String, language: String? = null): Card?
+    fun findAllCardsForGame(gameId: String): List<Card>
     fun findByTitle(searchString: String): List<Card>
     fun saveCard(card: Card): Card
     fun deleteCard(cardId: String)
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Service("cardService")
 class CardServiceImpl : CardService {
@@ -27,17 +29,17 @@ class CardServiceImpl : CardService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    override fun findCard(cardId: String): Card? {
+    override fun findCard(cardId: String, language: String?): Card? {
         val card = cardRepository.findByIdOrNull(cardId)
         log.debug("Looked up card for id " + cardId)
-        return card
+        return card?.let { c -> Card(c.id, c.title, c.translations.filter { translation -> language?.equals(translation.language)?:true }, c.gameId) }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    override fun findAllCardsForTranslation(translationId: String): List<Card> {
-        val cards = cardRepository.findAllByTranslationId(translationId)
-        log.debug("Looked up " + cards.size + " cards for translationId " + translationId)
+    override fun findAllCardsForGame(gameId: String): List<Card> {
+        val cards = cardRepository.findAllByGameId(gameId)
+        log.debug("Looked up " + cards.size + " cards for gameId " + gameId)
         return cards
     }
 

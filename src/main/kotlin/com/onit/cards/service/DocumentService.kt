@@ -22,8 +22,10 @@ import java.util.stream.Stream
 
 
 interface DocumentService {
-    fun getQrCodesForTranslation(translationId: String): ByteArray
+    fun getQrCodesForGame(gameId: String): ByteArray
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Service("documentService")
 class DocumentServiceImpl : DocumentService {
@@ -41,8 +43,8 @@ class DocumentServiceImpl : DocumentService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    override fun getQrCodesForTranslation(translationId: String): ByteArray {
-        val cards = cardService.findAllCardsForTranslation(translationId)
+    override fun getQrCodesForGame(gameId: String): ByteArray {
+        val cards = cardService.findAllCardsForGame(gameId)
         val document = Document()
 
         val byteArrayOutputStream = ByteArrayOutputStream()

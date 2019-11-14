@@ -4,10 +4,15 @@ import com.onit.cards.dto.ErrorResponseDTO
 import com.onit.cards.dto.GameDTO
 import com.onit.cards.exception.ObjectNotFoundException
 import com.onit.cards.model.Game
+import com.onit.cards.service.DocumentService
 import com.onit.cards.service.GameService
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.util.FileCopyUtils
 import org.springframework.web.bind.annotation.*
+import java.io.ByteArrayInputStream
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Api(description = "The Games API")
 @RestController
@@ -15,6 +20,9 @@ class GameController {
 
     @Autowired
     lateinit var gameService: GameService
+
+    @Autowired
+    lateinit var documentService: DocumentService
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -31,6 +39,28 @@ class GameController {
     ): GameDTO {
         val game: Game? = gameService.findGame(id)
         return game?.let { game -> GameDTO.fromGame(game) } ?: throw ObjectNotFoundException()
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @ApiOperation(value = "Downloads the pdf containing the QR codes of the cards for this game")
+    @ApiResponses(
+            ApiResponse(code = 200, message = "The PDF with the QR codes"),
+            ApiResponse(code = 404, message = "Game for given ID could not be found", response = ErrorResponseDTO::class)
+    )
+    @GetMapping("/game/qr-printout/{gameId}")
+    fun getGameQrCodesPrintOut(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            @ApiParam(value = "The ID of the game for which to print the codes", required = true)
+            @PathVariable
+            gameId: String
+    ) {
+        val bytes = documentService.getQrCodesForGame(gameId)
+        response.contentType = "application/pdf"
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"qr_codes.pdf\""));
+
+        FileCopyUtils.copy(ByteArrayInputStream(bytes), response.outputStream)
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

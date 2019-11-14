@@ -1,10 +1,12 @@
 package com.onit.cards.dto
 
+import com.fasterxml.jackson.annotation.JsonRootName
 import com.onit.cards.model.Game
 import com.onit.cards.model.GameRelationShip
 import java.util.*
 import kotlin.collections.ArrayList
 
+@JsonRootName(value = "Game")
 data class GameDTO(val id: String?, val title: String, val description: String, val vendor: String, val image: String?, val relatedGames: List<GameRelationshipDTO>?) {
     companion object GameDTO {
         fun fromGame(game: Game) = GameDTO(game.id,
@@ -20,5 +22,5 @@ data class GameDTO(val id: String?, val title: String, val description: String, 
             description,
             vendor,
             image,
-            relatedGames?.map { r -> GameRelationShip(r.relatedGameId, r.type) }?:ArrayList())
+            relatedGames?.map(GameRelationshipDTO::toGameRelationship) ?:ArrayList())
 }

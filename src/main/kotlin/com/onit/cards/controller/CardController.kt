@@ -27,9 +27,12 @@ class CardController {
     fun getCard(
             @ApiParam(value = "The ID of the card", required = true)
             @PathVariable
-            id: String
+            id: String,
+            @ApiParam(value = "The language (ISO) for which a translation of the card should be returned (optional). If none is provided all available languages will be returned.", required = true)
+            @RequestParam
+            language: String?
     ): CardDTO {
-        val card: Card? = cardService.findCard(id)
+        val card: Card? = cardService.findCard(id, language)
         return card?.let { c -> CardDTO.fromCard(c) } ?: throw ObjectNotFoundException()
     }
 
@@ -77,7 +80,7 @@ class CardController {
     @GetMapping("/cards/{translationId}")
     fun getCardsForTranslation(
             @ApiParam(value = "The ID of the translation for which the cards should be listed", required = true)
-            @RequestHeader("translation-id")
+            @PathVariable("translation-id")
             translationId: String
     ): List<CardDTO> {
         val card: List<Card> = cardService.findAllCardsForTranslation(translationId)

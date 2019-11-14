@@ -6,4 +6,4 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "cards")
 @TypeAlias("Card")
-data class Card(@Id val id: String, val title: String, val body: List<CardElement>, val translationId: String )
+data class Card(@Id val id: String, val title: String, val translations: List<CardTranslation>, val gameId: String )
