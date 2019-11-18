@@ -5,7 +5,7 @@ import com.onit.cards.model.Card
 import java.util.*
 
 @JsonRootName(value = "Card")
-data class CardDTO(val id: String?, val title: String, val translation: List<CardTranslationDTO>, val gameId: String) {
+data class CardDTO(val id: String?, val title: String, val translations: List<CardTranslationDTO>, val gameId: String) {
 
     companion object CardDTO {
         fun fromCard(card: Card ) =
@@ -13,5 +13,5 @@ data class CardDTO(val id: String?, val title: String, val translation: List<Car
     }
 
     fun toCard() =
-        Card(id ?: UUID.randomUUID().toString(), title, translation.map { elem -> elem.toCardTranslation() }, gameId)
+        Card(id ?: UUID.randomUUID().toString(), title, translations.map { elem -> elem.toCardTranslation() }, gameId)
 }

@@ -72,18 +72,18 @@ class CardController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    @ApiOperation(value = "Looks up all cards for the given game and translation.")
+    @ApiOperation(value = "Looks up all cards for the given game.")
     @ApiResponses(
-            ApiResponse(code = 200, message = "List of cards for the given translation", response = CardDTO::class, responseContainer = "List"),
-            ApiResponse(code = 404, message = "Translation for given ID could not be found", response = ErrorResponseDTO::class)
+            ApiResponse(code = 200, message = "List of cards for the given game", response = CardDTO::class, responseContainer = "List"),
+            ApiResponse(code = 404, message = "Game for given ID could not be found", response = ErrorResponseDTO::class)
     )
-    @GetMapping("/cards/{translationId}")
+    @GetMapping("/cards/{gameId}")
     fun getCardsForTranslation(
-            @ApiParam(value = "The ID of the translation for which the cards should be listed", required = true)
-            @PathVariable("translation-id")
-            translationId: String
+            @ApiParam(value = "The ID of the game for which the cards should be listed", required = true)
+            @PathVariable
+            gameId: String
     ): List<CardDTO> {
-        val card: List<Card> = cardService.findAllCardsForTranslation(translationId)
+        val card: List<Card> = cardService.findAllCardsForGame(gameId)
         return card.map { c -> CardDTO.fromCard(c) }
     }
 

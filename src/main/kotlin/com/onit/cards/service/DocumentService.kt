@@ -37,7 +37,6 @@ class DocumentServiceImpl : DocumentService {
     @Autowired
     lateinit var cardService: CardService
 
-
     @Value("\${qr.code.size.px}")
     private val qrCodeSize: String? = null
 
